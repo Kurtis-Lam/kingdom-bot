@@ -6,7 +6,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix = ".", intents = intents)
 
-token = "MTI1MTUyNzgxNzUxMDc4MDkzOA.GY-_fU.e9END6DEOzva9vXmBrD2Mi7C6jxj47BF4b4atk"
+token = "fuck whoever hacked me with the bots token"
 
 cogs_dict = {
     "admin": ["channel", "fping", "warn"],
