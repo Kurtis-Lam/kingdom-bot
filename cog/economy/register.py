@@ -10,30 +10,24 @@ class Register(commands.Cog):
     @staticmethod
     def load_data(file):
         if not os.path.exists(file):
-            return {}
+            with open(file, "w") as f:
+                json.dump({}, f)
         with open(file, "r") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-        return data
+            return json.load(f)
     @staticmethod
     def save_data(file, data):
         with open(file, "w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
       
-    @commands.hybrid_command(aliases=["reg"], name="register", description="Register yourself to use our economy-related commands!")
+    @commands.hybrid_command(aliases=["reg"], name="register", description="Registers your account to use economy-related commands!")
     async def register(self, ctx):
         user_id = str(ctx.message.author.id)
         balance = self.load_data("balance.json")
-        registered = self.load_data("registered.json")
-        if user_id not in registered:
-            registered[user_id] = True
+        if user_id not in balance:
             balance[user_id] = {
                 "coins": 0,
                 "gems": 0
             }
-            self.save_data("registered.json", registered)
             self.save_data("balance.json", balance)
             register_embed = discord.Embed(
                 title="Account Successfully Registered ✅", 
