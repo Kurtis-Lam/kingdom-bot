@@ -7,23 +7,24 @@ from helpers import checks
 class Balance(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-      
+    
     @staticmethod
     def load_data(file):
         if not os.path.exists(file):
-            return {}
+            with open(file, "w") as f:
+                json.dump({}, f)
         with open(file, "r") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-        return data
+            return json.load(f)
+    @staticmethod
+    def save_data(file, data):
+        with open(file, "w") as f:
+            json.dump(data, f, indent=4)
 
     @checks.has_registered()
-    @commands.hybrid_command(aliases=["bal"], name="balance", description="Check your balance")
+    @commands.hybrid_command(aliases=["bal"], name="balance", description="Checks your balance")
     async def balance(self, ctx):
-        balance = self.load_data("balance.json")
         user_id = str(ctx.message.author.id)
+        balance = self.load_data("balance.json")
         if user_id in balance:
             coins = balance[user_id].get("coins")
             gems = balance[user_id].get("gems")
