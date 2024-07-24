@@ -1,18 +1,27 @@
 import discord
 from discord.ext import commands
+import os
+import asyncio
+from datetime import datetime, timedelta
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix = ".", intents = intents)
+bot.remove_command("help")
 
-token = "fuck whoever hacked me with the bots token"
+token = os.environ["TOKEN"]
+
+spawn_count = 0
+start_time = None
+message = None
 
 cogs_dict = {
-    "admin": ["channel", "fping", "warn"],
+    "admin": ["channel", "fping", "message", "warn"],
     "economy": ["balance", "register"],
     "minigames": ["dig", "rps"],
-    "private": ["private"]
+    #"private": ["private", "make"]
+    "utilities": ["help"]
 }
 async def load_cogs():
     for category, cogs in cogs_dict.items():
@@ -24,10 +33,9 @@ async def load_cogs():
             except Exception as e:
                 print(f'Failed to load {cog.upper()} cog: {e}')
 
-@bot.tree.command(name="first_slash_command", 
-                  description="Yes, this was the bot's very first slash command. LMFAO")
-async def slash_command(interaction:discord.Interaction):
-    await interaction.response.send_message(f"Hi! {interaction.user.mention} This was the bot's very first slash command. LMFAO")
+@bot.tree.command(name="hello", description="Says hi to the bot lmfao")
+async def slash_command(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Hi! {interaction.user.mention} 👋")
     
 @bot.event
 async def on_ready():
@@ -37,10 +45,22 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
-        return
+    global spawn_count
+    if message.author.id == 716390085896962058 and message.embeds:
+        embed = message.embeds[0]
+        if embed.title.startswith("A wild pokémon has appeared!") or embed.title.startswith("Wild"):
+            spawn_count += 1
     await bot.process_commands(message)
-
+@bot.command()
+async def start(ctx):
+    global start_time, message
+    start_time = datetime.now()
+    message = await ctx.send("0 spawns per hour")
+    while True:
+        await asyncio.sleep(1)
+        spawns_per_hour = spawn_count / ((datetime.now() - start_time).total_seconds() / 3600)
+        spawns_per_hour_int = int(spawns_per_hour)
+        await message.edit(content=f"{spawns_per_hour_int:.2f} spawns per hour")
     
 try:
     bot.run(token)
