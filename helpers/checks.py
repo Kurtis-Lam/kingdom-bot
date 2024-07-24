@@ -7,9 +7,9 @@ class NotStarted(commands.CheckFailure):
     def __init__(self, *, embed=None):
         self.embed = embed
 def load_registered_users():
-    if not os.path.exists("registered.json"):
+    if not os.path.exists("balance.json"):
         return {}
-    with open("registered.json", "r") as file:
+    with open("balance.json", "r") as file:
         try:
             registered = json.load(file)
         except json.JSONDecodeError:
