@@ -11,12 +11,12 @@ class channelActionConfirm(discord.ui.View):
     async def yes_callback(self, interaction, button):
         if interaction.user == self.ctx.author:
             if self.command == "nuke":
-                new_channel = await self.channel.clone()
-                await self.channel.delete()
-                await new_channel.send(f"Nuked! {self.ctx.author.mention}", delete_after=0.01)
+                new_channel = await self.channel.clone(reason=f"Nuked by {self.ctx.author}")
+                await self.channel.delete(reason=f"Nuked by {self.ctx.author}")
+                await new_channel.send(f"Nuked! {self.ctx.author.mention}", delete_after = 0.01)
                 await new_channel.send(f"Nuked by `{self.ctx.author.name}`")
             elif self.command == "delete":
-                await self.channel.delete()
+                await self.channel.delete(reason=f"Deleted by {self.ctx.author}")
             button.label = "Yes"
             button.disabled = True
             for child in self.children:
@@ -25,7 +25,7 @@ class channelActionConfirm(discord.ui.View):
             try:
                 await interaction.response.edit_message(view=self)
             except discord.errors.NotFound:
-                print("Channel not found")
+                pass
         elif interaction.user != self.ctx.author:
             await self.channel.send(f"{self.ctx.author.mention} This is not for you!", delete_after = 3)
             
@@ -38,6 +38,7 @@ class channelActionConfirm(discord.ui.View):
             for child in self.children:
                 if isinstance(child, discord.ui.Button) and child != button:
                     child.disabled = True
+            await self.channel.send("Aborted")
             try: 
                 await interaction.response.edit_message(view=self)
             except discord.errors.NotFound:
