@@ -40,26 +40,24 @@ class Private(commands.Cog):
     async def ctfnr(self, ctx):
         e = discord.Embed(title = "Creating a ticket for no reason will lead to a ban", description = "")
         await ctx.send(embed = e)
-    @commands.command()
+    @commands.hybrid_command(name="donorperksinfo", description = "Donor Perks Info")
     @commands.has_permissions(administrator=True)
-    async def donorperksinfo(self, ctx):
+    async def donorperksinfo(self, ctx, bronze: discord.TextChannel, silver: discord.TextChannel, gold: discord.TextChannel, diamond: discord.TextChannel, elite: discord.TextChannel, ticket: discord.TextChannel):
         e = discord.Embed(title="Donor Perks", description="Here are our donor perks!")
-        e.add_field(name="🥉 Bronze Donor", value=":money_with_wings: Price: 50,000 pc\n🕒 Time: 14 days\n", inline = False)
-        e.add_field(name="🥈 Silver Donor", value=":money_with_wings: Price: 100,000 pc\n🕒 Time: 28 days\n", inline = False)
-        e.add_field(name="🥇 Gold Donor", value=":money_with_wings: Price: 300,000 pc\n🕒 Time: 42 days\n", inline = False)
-        e.add_field(name="💎 Diamond Donor", value=":money_with_wings: Price: 500,000 pc\n🕒 Time: 56 days\n", inline = False)
-        e.add_field(name="👑 Elite Donor", value=":money_with_wings: Price: 1,000,000 pc\n🕒 Time: 84 days\n", inline = False)
+        e.add_field(name="🥉 Bronze Donor", value=f":money_with_wings: Price: 50,000 pc\n🕒 Time: 14 days\n🔓 Access to: {bronze.mention}\n", inline = False)
+        e.add_field(name="🥈 Silver Donor", value=f":money_with_wings: Price: 100,000 pc\n🕒 Time: 28 days\n🔓 Access to: {silver.mention}\n", inline = False)
+        e.add_field(name="🥇 Gold Donor", value=f":money_with_wings: Price: 300,000 pc\n🕒 Time: 42 days\n🔓 Access to: {gold.mention}\n", inline = False)
+        e.add_field(name="💎 Diamond Donor", value=f":money_with_wings: Price: 500,000 pc\n🕒 Time: 56 days\n🔓 Access to: {diamond.mention}\n", inline = False)
+        e.add_field(name="👑 Elite Donor", value=f":money_with_wings: Price: 1,000,000 pc\n🕒 Time: 84 days\n🔓 Access to: {elite.mention}\n", inline = False)
+        e.add_field(name=f"🎫 Create a ticket at {ticket.mention} to claim your role!", value = "", inline = False)
         await ctx.send(embed = e)
-        await ctx.send("For Bronze, Silver, Gold, Diamond, and Elite Donor, you can get access to <#1258955312728375369> <#1258955344705753088> <#1258955373101187092> <#1258955427501314060> and <#1258955511999500353> spawn channels respectively")
-        await ctx.send("Create a ticket at https://discord.com/channels/1258403516712489054/1258956162724794450/1261542940170391604 ")
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def vipperksinfo(self, ctx):
+    async def vipperksinfo(self, ctx, vip: discord.TextChannel, ticket: discord.TextChannel):
         e = discord.Embed(title="VIP Perks", description="Here are our VIP perks!")
-        e.add_field(name="⭐ VIP", value=":money_with_wings: Price: 3,000,000 pc\n🕒 Time: 180 days", inline = False)
+        e.add_field(name="⭐ VIP", value=f":money_with_wings: Price: 3,000,000 pc\n🕒 Time: 180 days\n🔓 Access to: {vip.mention}\n", inline = False)
+        e.add_field(name=f"🎫 Create a ticket at {ticket.mention} to claim your role!", value = "", inline = False)
         await ctx.send(embed = e)
-        await ctx.send(f"For VIP, you can get access to <#1258955745513177088> spawn channel")
-        await ctx.send("Create a ticket at https://discord.com/channels/1258403516712489054/1258956162724794450/1261542940170391604 ")
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def catcheventinfo(self, ctx):
@@ -69,14 +67,12 @@ class Private(commands.Cog):
         e.add_field(name="🥉 3rd Place", value="🎯 At least 500+ catches\n💰 Prize: 100k pc", inline = False)
         e.add_field(name="", value="🎯 Fail to meet requirement: 💰 Prize ÷ 2", inline = False)
         await ctx.send(embed = e)
-        await ctx.send("NEW <@&1259847380531019886> !\n😎 Start Catching!\n🛠️ <@&1258408012926947459>s can also participate!")
-
-
+        await ctx.send("NEW <@&> !\n😎 Start Catching!\n🛠️ <@&>s can also participate!")
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def say(self, ctx, *args):
         message = ' '.join(args)
         await ctx.send(message)
-
+                
 async def setup(bot):
     await bot.add_cog(Private(bot))
