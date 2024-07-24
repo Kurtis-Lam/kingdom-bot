@@ -54,31 +54,29 @@ class choose(discord.ui.View):
 class RockPaperScissors(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.balance_file = "balance.json"
 
-    def load_balance(self):
-        if not os.path.exists(self.balance_file):
-            return {}
-        with open(self.balance_file, "r") as file:
-            try: 
-                balance = json.load(file)
-            except json.JSONDecodeError:
-                balance = {}
-        return balance
+    @staticmethod
+    def load_data(file):
+        if not os.path.exists(file):
+            with open(file, "w") as f:
+                json.dump({}, f)
+        with open(file, "r") as f:
+            return json.load(f)
+    @staticmethod
+    def save_data(file, data):
+        with open(file, "w") as f:
+            json.dump(data, f, indent=4)
       
     def checkrps(self, ctx, bots_choice, users_choice):
-        balance: dict = self.load_balance()
+        balance = self.load_data("balance.json")
         user_id = str(ctx.message.author.id)
-        with open(self.balance_file, "r") as f:
-            balance = json.load(f)
         winCases = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
         if bots_choice == users_choice:
             coins_earned = 100
             coins = balance[user_id].get("coins")
             coins += coins_earned
             balance[user_id]["coins"] = coins
-            with open("balance.json", "w") as f:
-                json.dump(balance, f)
+            self.save_data("balance.json", balance)
             user_choice = users_choice.lower()
             bot_choice = bots_choice.lower()
             return "Rock Paper Scissors", f"Your choice: {user_choice}", f"Bot's choice: {bot_choice}", f"Result: We tied!", f"You got {coins_earned} 🪙 ! GG, play again! ", discord.Color.light_grey()
@@ -87,8 +85,7 @@ class RockPaperScissors(commands.Cog):
             coins = balance[user_id].get("coins")
             coins += coins_earned
             balance[user_id]["coins"] = coins
-            with open("balance.json", "w") as f:
-                json.dump(balance, f)
+            self.save_data("balance.json", balance)
             user_choice = users_choice.lower()
             bot_choice = bots_choice.lower()
             return "Rock Paper Scissors", f"Your choice: {user_choice}", f"Bot's choice: {bot_choice}", f"Result: You won!", f"You got {coins_earned} 🪙 ! Well done! ", discord.Color.green()
@@ -97,8 +94,7 @@ class RockPaperScissors(commands.Cog):
             coins = balance[user_id].get("coins")
             coins += coins_earned
             balance[user_id]["coins"] = coins
-            with open("balance.json", "w") as f:
-                json.dump(balance, f)
+            self.save_data("balance.json", balance)
             user_choice = users_choice.lower()
             bot_choice = bots_choice.lower()
             return "Rock Paper Scissors", f"Your choice: {user_choice}", f"Bot's choice: {bot_choice}", f"Result: You lost!", f"You got {coins_earned} 🪙 ... No worries, try again and you might beat me!", discord.Color.red()
@@ -107,26 +103,20 @@ class RockPaperScissors(commands.Cog):
     @commands.hybrid_command(aliases=["rockpaperscissors"], name="rps", description="Play famous game: \"Rock, Paper, Scissors\" with the bot!")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def rps(self, ctx):
-        try:
-            self.registered = checks.load_registered_users()
-            self.bal: dict = self.load_balance()
-            user_id = str(ctx.message.author.id)
-            with open(self.balance_file, "r") as f:
-                balance = json.load(f)
-            if user_id in balance:
-                options = ["rock", "paper", "scissors"]
-                ask_rps_em = discord.Embed(title="Rock, Paper or Scissors?", color=discord.Color.blue())
-                view = choose(ctx)
-                message = await ctx.send(embed=ask_rps_em, view=view)
-                await view.wait()
-                user_choice = view.user_choice if view.user_choice else "No choice made"
-                bot_choice = random.choice(options)
-                test = self.checkrps(ctx, bot_choice, user_choice)
-                result_em = discord.Embed(title = test[0], description = test [4], color = test[5])
-                result_em.add_field(name = test[3], value = f"{test[2]}\n{test[1]}", inline = False)
-                await ctx.send(embed=result_em)
-        except Exception as e:
-            await ctx.send(e)
+        user_id = str(ctx.message.author.id)
+        balance = self.load_data("balance.json")
+        if user_id in balance:
+            options = ["rock", "paper", "scissors"]
+            ask_rps_em = discord.Embed(title="Rock, Paper or Scissors?", color=discord.Color.blue())
+            view = choose(ctx)
+            message = await ctx.send(embed=ask_rps_em, view=view)
+            await view.wait()
+            user_choice = view.user_choice if view.user_choice else "No choice made"
+            bot_choice = random.choice(options)
+            test = self.checkrps(ctx, bot_choice, user_choice)
+            result_em = discord.Embed(title = test[0], description = test [4], color = test[5])
+            result_em.add_field(name = test[3], value = f"{test[2]}\n{test[1]}", inline = False)
+            await ctx.send(embed=result_em)
 
     @rps.error
     async def rps_error(self,ctx, error):
