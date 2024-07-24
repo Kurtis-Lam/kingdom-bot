@@ -15,26 +15,22 @@ class Dig(commands.Cog):
     @staticmethod
     def load_data(file):
         if not os.path.exists(file):
-            return {}
+            with open(file, "w") as f:
+                json.dump({}, f)
         with open(file, "r") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-        return data
+            return json.load(f)
     @staticmethod
     def save_data(file, data):
         with open(file, "w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
 
     @checks.has_registered()
-    @commands.hybrid_command(aliases=["mine"], name="dig", description="Dig for coins in the earth!")
+    @commands.hybrid_command(aliases=["mine"], name="dig", description="Dig for coins in the earth! You may rarely find gems too!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def dig(self, ctx):
         user_id = str(ctx.message.author.id)
         balance = self.load_data("balance.json")
-        registered = self.load_data("registered.json")
-        if user_id in registered:
+        if user_id in balance:
             randomn = 0
             randomn = random.randint(1, 1024)
             coins_earned = 0
