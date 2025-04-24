@@ -87,14 +87,15 @@ class Channels(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @app_commands.describe(new_name="The new name of the channel")
     @app_commands.describe(channel="The channel to rename")
-    async def rename(self, ctx, new_name: str, channel: discord.TextChannel = None):
+    async def rename(self, ctx, channel: discord.TextChannel = None, *, new_name: str):
+        await ctx.message.delete()
         if channel is None:
             channel = ctx.channel
             await channel.edit(name=new_name)
-            await ctx.send(f"Channel renamed to **{new_name}**!")
+            await ctx.send(f"Channel renamed to **{new_name}**!", delete_after = 3)
         else:
             await channel.edit(name=new_name)
-            await ctx.send(f"Channel renamed to **{new_name}**!")
+            await ctx.send(f"Channel renamed to **{new_name}**!", delete_after = 3)
     @rename.error
     async def rename_error(self, ctx, error):
         if isinstance(error, checks.NoManageChannelPermission):

@@ -1,4 +1,5 @@
 import discord
+import asyncio
 
 class channelActionConfirm(discord.ui.View):
     def __init__(self, ctx, command, channel):
@@ -11,11 +12,13 @@ class channelActionConfirm(discord.ui.View):
     async def yes_callback(self, interaction, button):
         if interaction.user == self.ctx.author:
             if self.command == "nuke":
+                await asyncio.sleep(2)
                 new_channel = await self.channel.clone(reason=f"Nuked by {self.ctx.author}")
                 await self.channel.delete(reason=f"Nuked by {self.ctx.author}")
                 await new_channel.send(f"Nuked! {self.ctx.author.mention}", delete_after = 0.01)
                 await new_channel.send(f"Nuked by `{self.ctx.author.name}`")
             elif self.command == "delete":
+                await asyncio.sleep(2)
                 await self.channel.delete(reason=f"Deleted by {self.ctx.author}")
             button.label = "Yes"
             button.disabled = True

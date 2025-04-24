@@ -1,44 +1,43 @@
-import discord
+import discord 
 from discord.ext import commands
 import json
-import os
 
 class Register(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @staticmethod
-    def load_data(file):
-        if not os.path.exists(file):
-            with open(file, "w") as f:
-                json.dump({}, f)
-        with open(file, "r") as f:
-            return json.load(f)
-    @staticmethod
-    def save_data(file, data):
-        with open(file, "w") as f:
-            json.dump(data, f, indent=4)
-      
-    @commands.hybrid_command(aliases=["reg"], name="register", description="Registers your account to use economy-related commands!")
+    @commands.hybrid_command(aliases=["reg"], name="register", description="Registers yourself!")
     async def register(self, ctx):
+        def load_data(file):
+            with open(file, "r") as f:
+                return json.load(f)
+        def save_data(file, data):
+            with open(file, "w") as f:
+                json.dump(data, f, indent=4)
         user_id = str(ctx.message.author.id)
-        balance = self.load_data("balance.json")
+        balance = load_data("balance.json")
         if user_id not in balance:
             balance[user_id] = {
-                "coins": 0,
-                "gems": 0
+                "coins": 0, #coins are coins
+                "gems": 0, #dig
+                "rubies": 0, #burgle
+                "lifesavers": 0, 
+                "fishes": 0, #fish
+                "sharks": 0, #fish
+                "bunnies": 0, #hunt
+                "foxes": 0, #hunt
+                "carrots": 0, #farm
+                "vegetables": 0, #farm
             }
-            self.save_data("balance.json", balance)
+            save_data("balance.json", balance)
             register_embed = discord.Embed(
-                title="Account Successfully Registered ✅", 
-                description="You are now registered!", 
+                title="Account Successfully Registered ✅",
                 color = discord.Color.green()
             )
             await ctx.send(embed=register_embed)
         else:
             registered_embed = discord.Embed(
-                title="Account Already Registered", 
-                description="You already have an account!", 
+                title="Account Already Registered ❗",
                 color = discord.Color.red()
             )
             await ctx.send(embed=registered_embed)

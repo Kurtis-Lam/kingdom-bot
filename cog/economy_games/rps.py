@@ -5,6 +5,7 @@ import os
 import random
 import asyncio
 from helpers import checks
+import datetime
 
 class choose(discord.ui.View):
     def __init__(self, ctx):
@@ -51,6 +52,7 @@ class choose(discord.ui.View):
             await interaction.response.edit_message(content='', view=self)
             self.stop()
           
+        
 class RockPaperScissors(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -72,7 +74,7 @@ class RockPaperScissors(commands.Cog):
         user_id = str(ctx.message.author.id)
         winCases = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
         if bots_choice == users_choice:
-            coins_earned = 100
+            coins_earned = 200
             coins = balance[user_id].get("coins")
             coins += coins_earned
             balance[user_id]["coins"] = coins
@@ -90,7 +92,7 @@ class RockPaperScissors(commands.Cog):
             bot_choice = bots_choice.lower()
             return "Rock Paper Scissors", f"Your choice: {user_choice}", f"Bot's choice: {bot_choice}", f"Result: You won!", f"You got {coins_earned} 🪙 ! Well done! ", discord.Color.green()
         else:
-            coins_earned = 50
+            coins_earned = 100
             coins = balance[user_id].get("coins")
             coins += coins_earned
             balance[user_id]["coins"] = coins
@@ -101,13 +103,13 @@ class RockPaperScissors(commands.Cog):
 
     @checks.has_registered()
     @commands.hybrid_command(aliases=["rockpaperscissors"], name="rps", description="Play famous game: \"Rock, Paper, Scissors\" with the bot!")
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def rps(self, ctx):
         user_id = str(ctx.message.author.id)
         balance = self.load_data("balance.json")
         if user_id in balance:
             options = ["rock", "paper", "scissors"]
-            ask_rps_em = discord.Embed(title="Rock, Paper or Scissors?", color=discord.Color.blue())
+            ask_rps_em = discord.Embed(title="Rock, Paper or Scissors?", color = 0x0097ff)
             view = choose(ctx)
             message = await ctx.send(embed=ask_rps_em, view=view)
             await view.wait()
@@ -119,14 +121,11 @@ class RockPaperScissors(commands.Cog):
             await ctx.send(embed=result_em)
 
     @rps.error
-    async def rps_error(self,ctx, error):
+    async def rps_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            x = round(error.retry_after)
-            y = await ctx.send(f"**{ctx.author.display_name}**\n > You are playing too fast!\n > Please try again in **{x}** seconds.", delete_after = x)
-            while x > 0:
-                await y.edit(content = f"**{ctx.author.display_name}**\n > You are playing too fast!\n > Please try again in **{x}** seconds.")
-                x = x - 1
-                await asyncio.sleep(1)
+            cooldown = error.retry_after
+            now = int(datetime.datetime.now().timestamp())
+            await ctx.send(f"⏱ **| {ctx.author.display_name}:**\n> You are playing too fast!\n > Please try again in <t:{now + int(cooldown)}:R>.", delete_after=cooldown)
         elif isinstance(error, checks.NotStarted):
             need_to_register_embed = error.embed
             await ctx.send(embed=need_to_register_embed)

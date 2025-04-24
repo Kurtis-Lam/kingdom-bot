@@ -26,11 +26,11 @@ class FPing(commands.Cog):
     async def update_latency(self, message):
         i = 1
         while self.editing:
-            await asyncio.sleep(1)
+            await asyncio.sleep(60)
             latency = self.bot.latency * 1000
             self.latencies.append(latency)
             await message.edit(content=self.format_latency(latency, i))
-            i += 1
+            i += 60
 
     def format_latency(self, latency, i):
         return f"Pong! **{latency:.2f} ms**\n`Highest Latency`: **{max(self.latencies):.2f} ms**\n`Lowest Latency`: **{min(self.latencies):.2f} ms**\n`Average Latency`: **{sum(self.latencies) / len(self.latencies):.2f} ms**\n`Seconds Elapsed`: **{i} secs**"
