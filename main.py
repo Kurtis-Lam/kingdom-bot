@@ -16,16 +16,16 @@ from openai import OpenAI
 
 
 
-owners = [1250429544486273038, 1261606164437667882]
+owners = [11250429544486273038, 11261606164437667882]
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
 bot = commands.Bot(command_prefix = ".", owner_ids = set(owners), intents = intents)
 bot.remove_command("help")
-token = "MTI1MTUyNzgxNzUxMDc4MDkzOA.G11vpp.cNggVR8JNBmPbBqQchwp-mJKJOh0hgbxIUaP8M"
+token = "MTI1MTUyNzgxNzfakeUxMDc4MDkzOA.G11vpp.cNggVR8JNBmPbBqQchwp-mJKJOh0hgbxIUaP8M"
 
-XAI_API_KEY = "xai-CQ0intt8owpOftZfV63yenpYKymhCCPv4QCGpR3VxevVoXQ0zkuxJX2oy8GuqThZ1xDPiQsJWQ7VaF8D"
+XAI_API_KEY = "xai-CQ0intt8owfakepOftZfV63yenpYKymhCCPv4QCGpR3VxevVoXQ0zkuxJX2oy8GuqThZ1xDPiQsJWQ7VaF8D"
 client = OpenAI(
     api_key = XAI_API_KEY,
     base_url = "https://api.x.ai/v1",
